@@ -2,7 +2,8 @@ import jsonwebtoken from "jsonwebtoken";
 import moment from "moment";
 import httpStatus from "http-status";
 import mongoose from "mongoose";
-import AWS from "aws-sdk";
+import { S3Client } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
@@ -225,12 +226,13 @@ const uploadProfilePhoto = catchAsync(async (req: Request, res: Response) => {
     if (!userId) return apiResponse(res, httpStatus.NOT_ACCEPTABLE, {message: "Undefined User"});
 
     // @to-do make common function to upload and delete photo from aws
-    AWS.config.update({
-        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.S3_ACCESS_KEY_SECRET!,
+    const s3 = new S3Client({
         region: process.env.S3_REGION!,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.S3_ACCESS_KEY_SECRET!,
+        }
     });
-    const s3 = new AWS.S3();
 
     // @ts-ignore
     const base64Data = new Buffer.from(photo.replace(/^data:image\/\w+;base64,/, ""), "base64");
@@ -244,7 +246,12 @@ const uploadProfilePhoto = catchAsync(async (req: Request, res: Response) => {
         ContentType: `image/${type}`, // required. Notice the back ticks
     };
     try {
-        const { Location, Key } = await s3.upload(params).promise();
+        const upload = new Upload({
+            client: s3,
+            // @ts-ignore
+            params: params
+        });
+        const { Location, Key } = await upload.done();
         const updateUser = await UserModel.findOneAndUpdate(
             { _id: userId },
             { $set: { photo: Key } }
@@ -418,12 +425,13 @@ const fileUpload = catchAsync(async (req: Request, res: Response) => {
     if (!userId) return apiResponse(res, httpStatus.NOT_ACCEPTABLE, {message: "Undefined User"});
 
     // @to-do make common function to upload and delete photo from aws
-    AWS.config.update({
-        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.S3_ACCESS_KEY_SECRET!,
+    const s3 = new S3Client({
         region: process.env.S3_REGION!,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.S3_ACCESS_KEY_SECRET!,
+        }
     });
-    const s3 = new AWS.S3();
 
     // @ts-ignore
     const base64Data = new Buffer.from(file.replace(/^data:image\/\w+;base64,/, ""), "base64");
@@ -437,7 +445,12 @@ const fileUpload = catchAsync(async (req: Request, res: Response) => {
         ContentType: `image/${type}`, // required. Notice the back ticks
     };
     try {
-        const { Location, Key } = await s3.upload(params).promise();
+        const upload = new Upload({
+            client: s3,
+            // @ts-ignore
+            params: params
+        });
+        const { Location, Key } = await upload.done();
         if (Key)
             return apiResponse(res, httpStatus.ACCEPTED, { data: { path: Key }, message: "File Uploaded" });
         else
