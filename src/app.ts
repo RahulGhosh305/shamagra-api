@@ -26,19 +26,8 @@ app.use(
   }),
 );
 app.use(compression());
-const corsOrigins = config.corsOrigins === '*' 
-  ? '*' 
-  : config.corsOrigins.split(',').map((o: string) => o.trim());
-
-const corsOptions = {
-  origin: corsOrigins,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.use(cors());
+app.options(config.corsOrigins, cors<Request>());
 app.use(passport.initialize());
 
 passport.use("basic", passportHttpInit);
