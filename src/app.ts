@@ -20,16 +20,19 @@ app.use(morgan.errorHandler);
 app.use(helmet());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize({
-  replaceWith: '_'
-}));
+app.use(
+  mongoSanitize({
+    replaceWith: "_",
+  }),
+);
 app.use(compression());
-const corsOrigins = config.corsOrigins === '*' 
-  ? '*' 
-  : config.corsOrigins.split(',').map((o: string) => o.trim());
-
-app.use(cors({ origin: corsOrigins, credentials: true }));
-app.options('*', cors({ origin: corsOrigins, credentials: true }));
+app.use(
+  cors({
+    origin: config.corsOrigins,
+    credentials: true,
+  }),
+);
+app.options(config.corsOrigins, cors<Request>());
 app.use(passport.initialize());
 
 passport.use("basic", passportHttpInit);
