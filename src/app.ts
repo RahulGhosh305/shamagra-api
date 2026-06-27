@@ -28,8 +28,10 @@ app.use(
 app.use(compression());
 app.use(
   cors({
-    origin: config.corsOrigins,
+    origin: "https://admin.shamagra.com",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 app.options(config.corsOrigins, cors<Request>());
