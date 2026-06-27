@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_middleware_1 = require("@middlewares/auth.middleware");
+const utilities_controller_1 = require("src/controllers/back-end/utilities.controller");
+const router = express_1.default.Router();
+router.get("/roles", auth_middleware_1.isAuthenticated, utilities_controller_1.getRoles);
+router.get("/user", auth_middleware_1.isAuthenticated, utilities_controller_1.getUser);
+router.get("/countries", auth_middleware_1.isAuthenticated, utilities_controller_1.getCountries);
+router.get("/cities", auth_middleware_1.isAuthenticated, utilities_controller_1.getCities);
+router.get("/locations", auth_middleware_1.isAuthenticated, utilities_controller_1.getLocations);
+router.get("/categories", auth_middleware_1.isAuthenticated, utilities_controller_1.getCategories);
+router.get("/sub-categories", auth_middleware_1.isAuthenticated, utilities_controller_1.getSubCategories);
+router.get("/brands", auth_middleware_1.isAuthenticated, utilities_controller_1.getBrands);
+router.get("/vendors", auth_middleware_1.isAuthenticated, utilities_controller_1.getVendors);
+router.get("/users", auth_middleware_1.isAuthenticated, utilities_controller_1.getUsers);
+router.get("/organizations", auth_middleware_1.isAuthenticated, utilities_controller_1.getOrganizations);
+exports.default = router;

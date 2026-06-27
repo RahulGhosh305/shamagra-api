@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const router = express_1.default.Router();
+const auth_middleware_1 = require("@middlewares/auth.middleware");
+const auth_controller_1 = require("src/controllers/front-end/auth.controller");
+const auth_validation_1 = require("@validations/front-end/auth.validation");
+router.post("/register", auth_middleware_1.isClientAuthenticated, auth_validation_1.register, auth_controller_1.register);
+router.post("/login", auth_middleware_1.isClientAuthenticated, auth_validation_1.login, auth_controller_1.login);
+router.put("/change-password", auth_middleware_1.isAuthenticated, auth_validation_1.changePassword, auth_controller_1.changePassword);
+router.post("/upload-profile-photo", auth_middleware_1.isAuthenticated, auth_validation_1.uploadProfilePhoto, auth_controller_1.uploadProfilePhoto);
+router.delete("/remove-profile-photo", auth_middleware_1.isAuthenticated, auth_controller_1.removeProfilePhoto);
+router.post("/file-upload", auth_middleware_1.isAuthenticated, auth_validation_1.fileUpload, auth_controller_1.fileUpload);
+router.post("/lost-password", auth_middleware_1.isClientAuthenticated, auth_validation_1.lostPassword, auth_controller_1.lostPassword);
+router.post("/reset-password", auth_middleware_1.isClientAuthenticated, auth_validation_1.resetPassword, auth_controller_1.resetPassword);
+router.post("/renew", auth_middleware_1.isClientAuthenticated, auth_validation_1.renew, auth_controller_1.renew);
+router.post("/close-account", auth_middleware_1.isAuthenticated, auth_validation_1.closeAccount, auth_controller_1.closeAccount);
+router.delete("/logout", auth_middleware_1.isAuthenticated, auth_controller_1.logout);
+exports.default = router;

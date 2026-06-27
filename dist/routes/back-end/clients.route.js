@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const router = express_1.default.Router();
+const auth_middleware_1 = require("@middlewares/auth.middleware");
+const clients_controllers_1 = require("src/controllers/back-end/clients.controllers");
+const clients_validation_1 = require("@validations/back-end/clients.validation");
+router.get("/users", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_users_index'), clients_validation_1.getUsers, clients_controllers_1.getUsers);
+router.get("/users/:_id", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_users_index'), clients_validation_1.getUser, clients_controllers_1.getUser);
+router.post("/users", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_users_create'), clients_validation_1.addUser, clients_controllers_1.addUser);
+router.get("/vendors", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_vendors_index'), clients_validation_1.getVendors, clients_controllers_1.getVendors);
+router.post("/vendors", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_vendors_create'), clients_validation_1.addVendor, clients_controllers_1.addVendor);
+router.get("/vendors/:_id", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_vendors_index'), clients_validation_1.getVendor, clients_controllers_1.getVendor);
+router.get("/organizations", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_organizations_index'), clients_validation_1.getOrganizations, clients_controllers_1.getOrganizations);
+router.post("/organizations", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_organizations_create'), clients_validation_1.addOrganization, clients_controllers_1.addOrganization);
+router.get("/organizations/:_id", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_organizations_index'), clients_validation_1.getOrganization, clients_controllers_1.getOrganization);
+router.put("/organizations/:_id", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_organizations_update'), clients_validation_1.updateOrganization, clients_controllers_1.updateOrganization);
+router.delete("/organizations/:_id", auth_middleware_1.isAuthenticated, (0, auth_middleware_1.isScopePermitted)('crm_clients_organizations_delete'), clients_validation_1.deleteOrganization, clients_controllers_1.deleteOrganization);
+exports.default = router;
