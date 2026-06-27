@@ -24,8 +24,12 @@ app.use(mongoSanitize({
   replaceWith: '_'
 }));
 app.use(compression());
-app.use(cors());
-app.options(config.corsOrigins, cors<Request>());
+const corsOrigins = config.corsOrigins === '*' 
+  ? '*' 
+  : config.corsOrigins.split(',').map((o: string) => o.trim());
+
+app.use(cors({ origin: corsOrigins, credentials: true }));
+app.options('*', cors({ origin: corsOrigins, credentials: true }));
 app.use(passport.initialize());
 
 passport.use("basic", passportHttpInit);
