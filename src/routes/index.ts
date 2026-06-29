@@ -26,21 +26,21 @@ const initRoutes = (app: any) => {
 
   // Back-end routes
   app.use("/back-end/auth", beAuthRoute);
-  app.use("/back-end/utilities", beUtilitiesRoute);
   app.use("/back-end/dashboard", beDashboardRoute);
   app.use("/back-end/user-management", beUmRoute);
   app.use("/back-end/web-setup", beWsRoute);
   app.use("/back-end/workspace", beWorkspaceRoute);
   app.use("/back-end/clients", beClientsRoute);
+  app.use("/back-end/utilities", beUtilitiesRoute);
   app.use("/back-end/media-files", beMediaFilesRoute);
 
   // Front-end routes
   app.use("/front-end/auth", feAuthRoute);
-  app.use("/front-end/utilities", feUtilitiesRoute);
   app.use("/front-end/landing", feLandingRoute);
-  app.use("/front-end/search", feSearchRoute);
-  app.use("/front-end/template", feTemplateRoute);
   app.use("/front-end/checkout", feOrderRoute);
+  app.use("/front-end/search", feSearchRoute);
+  app.use("/front-end/utilities", feUtilitiesRoute);
+  app.use("/front-end/template", feTemplateRoute);
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     const error = new ApiError(httpStatus.NOT_FOUND, "Invalid URL");
