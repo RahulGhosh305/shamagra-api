@@ -12,9 +12,10 @@ const documentPages = Object.freeze({
 });
 
 const documentPositions = Object.freeze({
-  heroSlider: "heroSlider",
-  appDownload: "appDownload",
-  footerBanner: "footerBanner",
+  heroSlider: "Hero Slider",
+  promoBanner: "Promotional Banner",
+  adsBanner: "Advertisement Banner",
+  preFBanner: "Pre Footer Banner",
 });
 
 interface DocumentType extends Document {
@@ -24,7 +25,7 @@ interface DocumentType extends Document {
   photo: string;
   description: string;
   position: number;
-  bannerPlace: keyof typeof documentPositions;
+  bannerPlace: typeof documentPositions[keyof typeof documentPositions];
   status?: keyof typeof documentStatus;
   createdAt?: Date;
   updatedAt?: Date;

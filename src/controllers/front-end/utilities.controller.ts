@@ -194,8 +194,9 @@ const getContents = catchAsync(async (req: Request, res: Response) => {
       bannerPlace: {
         $in: [
           WsBannerPositions.heroSlider,
-          WsBannerPositions.appDownload,
-          WsBannerPositions.footerBanner
+          WsBannerPositions.promoBanner,
+          WsBannerPositions.adsBanner,
+          WsBannerPositions.preFBanner
         ],
       },
     },
@@ -207,11 +208,14 @@ const getContents = catchAsync(async (req: Request, res: Response) => {
       heroSlider: banners.filter(
         (item) => item.bannerPlace === WsBannerPositions.heroSlider
       ).sort((a, b) => (a.position || 0) - (b.position || 0)),
-      appDownload: banners.filter(
-        (item) => item.bannerPlace === WsBannerPositions.appDownload
+      promoBanner: banners.filter(
+        (item) => item.bannerPlace === WsBannerPositions.promoBanner
       ).sort((a, b) => (a.position || 0) - (b.position || 0)),
-      footerBanner: banners.filter(
-        (item) => item.bannerPlace === WsBannerPositions.footerBanner
+      adsBanner: banners.filter(
+        (item) => item.bannerPlace === WsBannerPositions.adsBanner
+      ).sort((a, b) => (a.position || 0) - (b.position || 0)),
+      preFBanner: banners.filter(
+        (item) => item.bannerPlace === WsBannerPositions.preFBanner
       ).sort((a, b) => (a.position || 0) - (b.position || 0)),
     },
   });
