@@ -101,6 +101,7 @@ const getAuthor = validate({
 const addAuthor = validate({
     body: Joi.object({
         name: Joi.string().required(),
+        photo: Joi.string().optional().allow(null).allow(""),
         isDisabled: Joi.boolean().required(),
         position: Joi.number().required(),
         description: Joi.string().required().allow(null).allow(""),
@@ -112,6 +113,7 @@ const updateAuthor = validate({
     body: Joi.object({
         _id: Joi.string().required(),
         name: Joi.string().required(),
+        photo: Joi.string().optional().allow(null).allow(""),
         isDisabled: Joi.boolean().required(),
         position: Joi.number().required(),
         description: Joi.string().required().allow(null).allow(""),

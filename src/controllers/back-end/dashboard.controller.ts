@@ -102,7 +102,7 @@ const salesOrderStats = catchAsync(async (req: Request, res: Response) => {
     const totalRevenueAggregation = await OrderModel.aggregate([
         {
             $match: {
-                orderStatus: { $nin: [OrderStatus.cancelled, OrderStatus.returned, OrderStatus.deleted] }
+                orderStatus: { $eq: OrderStatus.delivered }
             }
         },
         {
@@ -119,7 +119,7 @@ const salesOrderStats = catchAsync(async (req: Request, res: Response) => {
         {
             $match: {
                 createdAt: { $gte: startOfToday },
-                orderStatus: { $nin: [OrderStatus.cancelled, OrderStatus.returned, OrderStatus.deleted] }
+                orderStatus: { $eq: OrderStatus.delivered }
             }
         },
         {

@@ -8,6 +8,7 @@ const documentStatus = Object.freeze({
 
 interface DocumentType extends Document {
     name: string;
+    photo?: string;
     description: string;
     position?: number;
     isDisabled?: boolean;
@@ -17,6 +18,7 @@ interface DocumentType extends Document {
 const documentSchema: Schema = new Schema(
     {
         name: { type: String, required: true },
+        photo: { type: String, default: null },
         description: { type: String, default: null },
         position: { type: Number, default: 0 },
         isDisabled: { type: Boolean, default: false },

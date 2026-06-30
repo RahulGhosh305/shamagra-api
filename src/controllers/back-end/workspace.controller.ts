@@ -54,6 +54,7 @@ const addProduct = catchAsync(async (req: Request, res: Response) => {
     descriptionShort,
     authorDescription,
     descriptionLong,
+    purchasePrice,
     originalPrice,
     discountPrice,
     discountPercentage,
@@ -82,6 +83,14 @@ const addProduct = catchAsync(async (req: Request, res: Response) => {
     { name: true },
   );
 
+  const existingProductCode = await WorkspaceProductModel.findOne({
+    "product.productCode": productCode,
+  });
+
+  if (existingProductCode) {
+    return apiResponse(res, httpStatus.CONFLICT, { message: "Product Code must be unique. This product code is already in use." });
+  }
+
   const newProduct = new WorkspaceProductModel({
     product: {
       productCode,
@@ -90,6 +99,7 @@ const addProduct = catchAsync(async (req: Request, res: Response) => {
       author,
     },
     pricing: {
+      purchasePrice,
       originalPrice,
       discountPrice,
       discountPercentage,
@@ -152,6 +162,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     descriptionShort,
     authorDescription,
     descriptionLong,
+    purchasePrice,
     originalPrice,
     discountPrice,
     discountPercentage,
@@ -180,6 +191,15 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     { name: true },
   );
 
+  const existingProductCode = await WorkspaceProductModel.findOne({
+    "product.productCode": productCode,
+    _id: { $ne: req.params._id },
+  });
+
+  if (existingProductCode) {
+    return apiResponse(res, httpStatus.CONFLICT, { message: "Product Code must be unique. This product code is already in use." });
+  }
+
   await WorkspaceProductModel.updateOne(
     { _id: req.params._id },
     {
@@ -190,6 +210,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
         author,
       },
       pricing: {
+        purchasePrice,
         originalPrice,
         discountPrice,
         discountPercentage,

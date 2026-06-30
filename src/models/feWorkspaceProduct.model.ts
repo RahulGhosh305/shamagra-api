@@ -17,6 +17,7 @@ interface DocumentType extends Document {
     totalReviews: string;
   };
   pricing: {
+    purchasePrice: number;
     originalPrice: number;
     discountPrice: number;
     discountPercentage: number;
@@ -75,6 +76,7 @@ const descriptionSchema = new Schema(
 );
 
 const pricingSchema = new Schema({
+  purchasePrice: { type: Number, default: 0 },
   originalPrice: { type: Number, default: 0 },
   discountPrice: { type: Number, default: 0 },
   discountPercentage: { type: Number, default: 0 },
@@ -82,7 +84,7 @@ const pricingSchema = new Schema({
 }, { _id: false });
 
 const productSchema = new Schema({
-  productCode: { type: String, required: false, default: null },
+  productCode: { type: String, required: true, unique: true },
   title: { type: String, required: false, default: null },
   subTitle: { type: String, required: false, default: null },
   author: { type: String, required: false, default: null },

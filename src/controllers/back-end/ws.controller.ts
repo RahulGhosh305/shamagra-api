@@ -137,8 +137,8 @@ const deleteBanner = catchAsync(async (req: Request, res: Response) => {
 
 // Authors
 const addAuthor = catchAsync(async (req: Request, res: Response) => {
-    const { name, description, position, isDisabled, status } = req.body;
-    const newAuthor = new WsAuthorModel({ name, description, position, isDisabled, status });
+    const { name, photo, description, position, isDisabled, status } = req.body;
+    const newAuthor = new WsAuthorModel({ name, photo, description, position, isDisabled, status });
 
     const err = newAuthor.validateSync();
     if (err instanceof mongoose.Error.ValidationError) {
@@ -169,8 +169,8 @@ const getAuthor = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateAuthor = catchAsync(async (req: Request, res: Response) => {
-    const { name, description, position, isDisabled, status } = req.body;
-    await WsAuthorModel.updateOne({ _id: req.params.id }, { $set: { name, description, position, isDisabled, status } });
+    const { name, photo, description, position, isDisabled, status } = req.body;
+    await WsAuthorModel.updateOne({ _id: req.params.id }, { $set: { name, photo, description, position, isDisabled, status } });
     return apiResponse(res, httpStatus.ACCEPTED, { message: "Updated" });
 });
 
