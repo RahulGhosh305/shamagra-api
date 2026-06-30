@@ -6,21 +6,21 @@ import catchAsync from "@utils/catchAsync";
 import apiResponse from "@utils/apiResponse";
 import validationError from "@utils/validationError";
 
-import {UserModel, UserServicesStatus, UserStatus} from "@models/feUser.model";
-import {UserModel as BeUserModel} from "@models/beUser.model";
-import {OrganizationModel, OrganizationStatus} from "@models/feOrganization.model";
-import {CrmPaymentModel} from "@models/feCrmPayment.model";
-import {CrmAcquisitionLeadModel, CrmAcquisitionLeadStatus} from "@models/feCrmAcquisitionLead.model";
-import {WsCountryModel} from "@models/feWsCountry.model";
-import {UmRoleModel} from "@models/beUmRole.model";
+import { UserModel, UserServicesStatus, UserStatus } from "@models/feUser.model";
+import { UserModel as BeUserModel } from "@models/beUser.model";
+import { OrganizationModel, OrganizationStatus } from "@models/feOrganization.model";
+import { CrmPaymentModel } from "@models/feCrmPayment.model";
+import { CrmAcquisitionLeadModel, CrmAcquisitionLeadStatus } from "@models/feCrmAcquisitionLead.model";
+import { WsCountryModel } from "@models/feWsCountry.model";
+import { UmRoleModel } from "@models/beUmRole.model";
 
 const getUsers = catchAsync(async (req: Request, res: Response) => {
-    const {cityIds, locationIds, createdAtFrom, createdAtTo, agentNumber} = req.query;
+    const { cityIds, locationIds, createdAtFrom, createdAtTo, agentNumber } = req.query;
 
     const conditions = { status: { $ne: UserStatus.deleted } } as any;
-    if (cityIds) Object.assign(conditions, {"city._id": cityIds})
-    if (locationIds) Object.assign(conditions, {"location._id": locationIds})
-    if (agentNumber) Object.assign(conditions, {"phone.phone": agentNumber})
+    if (cityIds) Object.assign(conditions, { "city._id": cityIds })
+    if (locationIds) Object.assign(conditions, { "location._id": locationIds })
+    if (agentNumber) Object.assign(conditions, { "phone.phone": agentNumber })
 
     if (createdAtFrom && typeof createdAtFrom === "string") Object.assign(conditions, { createdAt: { $gte: new Date(`${new Date(createdAtFrom).toLocaleDateString('fr-CA')}T00:00:00.0Z`) } })
     if (createdAtTo && typeof createdAtTo === "string") Object.assign(conditions, { createdAt: { ...conditions.createdAt, $lte: new Date(`${new Date(createdAtTo).toLocaleDateString('fr-CA')}T23:59:59.0Z`) } })
@@ -42,26 +42,24 @@ const getUser = catchAsync(async (req: Request, res: Response) => {
         .findOne({ _id: req.params._id })
         .lean();
 
-    const transactions = await CrmPaymentModel.find({"user._id": req.params._id}).lean();
+    const transactions = await CrmPaymentModel.find({ "user._id": req.params._id }).lean();
 
     for (let i = 0; i < transactions.length; i++) {
         const transaction = transactions[i];
-        Object.assign(transaction, {lead: await CrmAcquisitionLeadModel.findOne({_id: transaction.leadId}, {"acquisition.name": true})})
+        Object.assign(transaction, { lead: await CrmAcquisitionLeadModel.findOne({ _id: transaction.leadId }, { "acquisition.name": true }) })
     }
 
-    if (user) Object.assign(user, {transactions});
+    if (user) Object.assign(user, { transactions });
 
     return apiResponse(res, httpStatus.OK, { data: user });
 });
 
 const addUser = catchAsync(async (req: Request, res: Response) => {
-    const { firstName, lastName, countryId, phone, gender, email } = req.body;
-    const country = await WsCountryModel.findOne({_id: countryId}, {name: true, code: true});
+    const { firstName, lastName, phone, gender, email } = req.body;
 
     let user = await UserModel.findOne(
         {
-            "phone.country._id": country?._id,
-            "phone.phone": phone,
+            phone,
             status: UserStatus.active
         },
         {
@@ -71,25 +69,39 @@ const addUser = catchAsync(async (req: Request, res: Response) => {
         }
     );
 
-    if (user) return apiResponse(res, httpStatus.NOT_ACCEPTABLE, {message: "This user already exists on the system!"});
+    if (user) return apiResponse(res, httpStatus.NOT_ACCEPTABLE, { message: "This user already exists on the system!" });
 
-    const newUser = new UserModel({firstName, lastName, phone: {country: country, phone}, gender, email});
+    const newUser = new UserModel({ firstName, lastName, phone, gender, email, password: "123456" });
 
     const err = newUser.validateSync();
     if (err instanceof mongoose.Error) {
         const valid = await validationError.requiredCheck(err.errors);
-        return apiResponse(res, httpStatus.NOT_ACCEPTABLE, {message: "Validation Required"}, valid);
+        return apiResponse(res, httpStatus.NOT_ACCEPTABLE, { message: "Validation Required" }, valid);
     }
 
     const save = await newUser.save()
     return apiResponse(res, httpStatus.CREATED, { data: save, message: "User Created" });
 });
 
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+    const { firstName, lastName, phone, gender, email } = req.body;
+
+    await UserModel.updateOne({ _id: req.params._id }, {
+        $set: { firstName, lastName, phone, gender, email }
+    });
+    return apiResponse(res, httpStatus.ACCEPTED, { message: "Updated" });
+});
+
+const deleteUser = catchAsync(async (req: Request, res: Response) => {
+    await UserModel.updateOne({ _id: req.params._id }, { status: UserStatus.deleted });
+    return apiResponse(res, httpStatus.ACCEPTED, { message: "Deleted" });
+});
+
 const addVendor = catchAsync(async (req: Request, res: Response) => {
     const { organizationId, userId, department, designation, employeeId, overview } = req.body;
-    const organization = await OrganizationModel.findOne({_id: organizationId}, {name: true}).lean();
+    const organization = await OrganizationModel.findOne({ _id: organizationId }, { name: true }).lean();
 
-    const update = await UserModel.updateOne({_id: userId}, {
+    const update = await UserModel.updateOne({ _id: userId }, {
         "services.vendor.isVendor": true,
         "services.vendor.organization": organization,
         "services.vendor.department": department,
@@ -99,8 +111,8 @@ const addVendor = catchAsync(async (req: Request, res: Response) => {
         "services.vendor.status": UserServicesStatus.approved
     })
 
-    let user = await UserModel.findOne({_id: userId}).lean();
-    const role = await UmRoleModel.findOne({_id: "6555c72a669a5dbc8adc2d11", isSystemDefined: true}, {name: true})
+    let user = await UserModel.findOne({ _id: userId }).lean();
+    const role = await UmRoleModel.findOne({ _id: "6555c72a669a5dbc8adc2d11", isSystemDefined: true }, { name: true })
 
     console.log(role)
 
@@ -115,7 +127,7 @@ const addVendor = catchAsync(async (req: Request, res: Response) => {
         superAdmin: false,
         username: user?.email ?? "",
         role,
-        vendor: {_id: user?._id, ...user?.services?.vendor}
+        vendor: { _id: user?._id, ...user?.services?.vendor }
     });
 
     console.log(newUser)
@@ -123,7 +135,7 @@ const addVendor = catchAsync(async (req: Request, res: Response) => {
     const err = newUser.validateSync();
     if (err instanceof mongoose.Error) {
         const valid = await validationError.requiredCheck(err.errors);
-        return apiResponse(res, httpStatus.NOT_ACCEPTABLE, {message: "Validation Required"}, valid);
+        return apiResponse(res, httpStatus.NOT_ACCEPTABLE, { message: "Validation Required" }, valid);
     }
 
     const save = await newUser.save()
@@ -212,6 +224,8 @@ export {
     getUsers,
     getUser,
     addUser,
+    updateUser,
+    deleteUser,
     getVendors,
     getVendor,
     addVendor,

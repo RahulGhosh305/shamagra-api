@@ -23,10 +23,28 @@ const addUser = validate({
     body: Joi.object({
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
-        countryId: Joi.string().required(),
+        countryId: Joi.string().optional().allow("").allow(null),
         phone: Joi.string().required(),
         gender: Joi.string().required(),
         email: Joi.string().required(),
+    })
+});
+
+const updateUser = validate({
+    body: Joi.object({
+        _id: Joi.string().required(),
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        countryId: Joi.string().optional().allow("").allow(null),
+        phone: Joi.string().required(),
+        gender: Joi.string().required(),
+        email: Joi.string().required(),
+    })
+});
+
+const deleteUser = validate({
+    params: Joi.object({
+        _id: Joi.string().required(),
     })
 });
 
@@ -94,6 +112,8 @@ export {
     getUsers,
     getUser,
     addUser,
+    updateUser,
+    deleteUser,
     getVendors,
     getVendor,
     addVendor,

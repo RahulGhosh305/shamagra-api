@@ -5,6 +5,8 @@ import {
     getUsers,
     getUser,
     addUser,
+    updateUser,
+    deleteUser,
     getVendors,
     getVendor,
     addVendor,
@@ -19,6 +21,8 @@ import {
     getUsers as getUsersValidation,
     getUser as getUserValidation,
     addUser as addUserValidation,
+    updateUser as updateUserValidation,
+    deleteUser as deleteUserValidation,
     getVendors as getVendorsValidation,
     getVendor as getVendorValidation,
     addVendor as addVendorValidation,
@@ -33,6 +37,9 @@ import {
 router.get("/users", isAuthenticated, isScopePermitted('crm_clients_users_index'), getUsersValidation, getUsers);
 router.get("/users/:_id", isAuthenticated, isScopePermitted('crm_clients_users_index'), getUserValidation, getUser);
 router.post("/users", isAuthenticated, isScopePermitted('crm_clients_users_create'), addUserValidation, addUser);
+router.put("/users/:_id", isAuthenticated, isScopePermitted('crm_clients_users_update'), updateUserValidation, updateUser);
+router.delete("/users/:_id", isAuthenticated, isScopePermitted('crm_clients_users_delete'), deleteUserValidation, deleteUser);
+
 router.get("/vendors", isAuthenticated, isScopePermitted('crm_clients_vendors_index'), getVendorsValidation, getVendors);
 router.post("/vendors", isAuthenticated, isScopePermitted('crm_clients_vendors_create'), addVendorValidation, addVendor);
 router.get("/vendors/:_id", isAuthenticated, isScopePermitted('crm_clients_vendors_index'), getVendorValidation, getVendor);
