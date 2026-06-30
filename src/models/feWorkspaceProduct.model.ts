@@ -35,7 +35,7 @@ interface DocumentType extends Document {
   specifications: {
     format: string;
     totalPages: string;
-    publishDate: Date;
+    publishYear: Date;
     language: string;
     originCountry: string;
     dimensions: string;
@@ -99,7 +99,7 @@ const shippingSchema = new Schema({
 const specificationSchema = new Schema({
   format: { type: String, default: null },
   totalPages: { type: String, default: null },
-  publishDate: { type: String, default: null }, // Date ও ব্যবহার করা যাবে
+  publishYear: { type: String, default: null }, // Date ও ব্যবহার করা যাবে
   language: { type: String, default: "English" },
   originCountry: { type: String, default: null },
   dimensions: { type: String, default: null },
